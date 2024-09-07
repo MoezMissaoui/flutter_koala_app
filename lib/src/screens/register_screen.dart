@@ -60,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       context,
       PageTransition(
         type: PageTransitionType.leftToRightWithFade,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 400),
         child: const LoginScreen(),
       ),
     );

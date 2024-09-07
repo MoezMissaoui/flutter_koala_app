@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/screens/home_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -44,7 +46,16 @@ class _MyWidgetState extends State<NavBar> {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('Home'),
-            onTap: () => {Navigator.of(context).pushNamed('/')},
+            onTap: () => {
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeftWithFade,
+                  duration: const Duration(milliseconds: 300),
+                  child: const HomeScreen(),
+                ),
+              )
+            },
           ),
           ListTile(
             leading: Icon(Icons.task),

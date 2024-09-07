@@ -1,3 +1,4 @@
+import 'package:koala/src/config/theme_colors.dart';
 import 'package:koala/src/screens/home_screen.dart';
 import 'package:koala/src/screens/register_screen.dart';
 import 'package:koala/src/screens/login_screen.dart';
@@ -5,12 +6,12 @@ import 'package:koala/src/auth.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:koala/src/screens/splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
 
   runApp(const MyApp());
 }
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFF6F00),
+          seedColor: ThemeColors.mainColor,
         ),
         useMaterial3: true,
         pageTransitionsTheme: PageTransitionsTheme(builders: {
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case '/':
             return PageTransition(
-              child: const SplashScreen(),
+              child: const Auth(),
               type: PageTransitionType.theme,
               settings: settings,
               reverseDuration: const Duration(seconds: 3),

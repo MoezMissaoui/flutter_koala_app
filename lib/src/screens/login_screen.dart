@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       PageTransition(
         type: PageTransitionType.rightToLeftWithFade,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 400),
         child: const RegisterScreen(),
       ),
     );
