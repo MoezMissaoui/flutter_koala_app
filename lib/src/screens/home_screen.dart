@@ -1,5 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:koala/src/components/nav_bar.dart';
+import 'package:koala/src/config/theme_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,32 +18,26 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: const Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text(
+            SizedBox(
+              height: 50,
+            ),
+            Text(
               'Hello you are logged in',
               style: TextStyle(
                 fontSize: 22,
               ),
             ),
-            Text(
-              currentUser.email!,
-              style: const TextStyle(
-                fontSize: 22,
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-              },
-              color: Colors.amber[900],
-              child: const Text('Log Out'),
-            )
           ],
         ),
       ),
+      drawer: const NavBar(),
+      appBar: AppBar(
+          backgroundColor: ThemeColors.mainColor,
+          foregroundColor: Colors.white),
     );
   }
 }
