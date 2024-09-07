@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "454760461970",
+    "project_id": "koala-8a23a",
+    "storage_bucket": "koala-8a23a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:454760461970:android:f705c69989dbdc8e05984b",
+        "android_client_info": {
+          "package_name": "com.example.koala"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1UnjCGLGvaFGQBXv1SJ0KJOmUDGOvKnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
