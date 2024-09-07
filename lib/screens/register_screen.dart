@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:koala/helpers/Alert.dart';
 import 'package:koala/helpers/validator_rules.dart';
+import 'package:koala/screens/login_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -39,7 +41,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void openLoginScreen() {
-    Navigator.of(context).pushReplacementNamed('loginscreen');
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.leftToRightWithFade,
+        duration: const Duration(milliseconds: 500),
+        child: const LoginScreen(),
+      ),
+    );
+
+    // Navigator.of(context).pushReplacementNamed('loginscreen');
   }
 
   @override

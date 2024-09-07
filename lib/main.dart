@@ -5,6 +5,7 @@ import 'package:koala/auth.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,14 +28,59 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.deepPurple,
         ),
         useMaterial3: true,
+        pageTransitionsTheme: PageTransitionsTheme(builders: {
+          TargetPlatform.iOS:
+              PageTransition(type: PageTransitionType.fade, child: this)
+                  .matchingBuilder,
+        }),
       ),
       // home: const Auth(),
-      routes: {
-        '/': (context) => const Auth(),
-        'homescreen': (context) => const HomeScreen(),
-        'registerscreen': (context) => const RegisterScreen(),
-        'loginscreen': (context) => const LoginScreen(),
+
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/':
+            return PageTransition(
+              child: const Auth(),
+              type: PageTransitionType.theme,
+              settings: settings,
+              reverseDuration: const Duration(seconds: 3),
+            );
+
+          case 'homescreen':
+            return PageTransition(
+              child: const HomeScreen(),
+              type: PageTransitionType.theme,
+              settings: settings,
+              reverseDuration: const Duration(seconds: 3),
+            );
+
+          case 'registerscreen':
+            return PageTransition(
+              child: const RegisterScreen(),
+              type: PageTransitionType.theme,
+              settings: settings,
+              reverseDuration: const Duration(seconds: 3),
+            );
+
+          case 'loginscreen':
+            return PageTransition(
+              child: const LoginScreen(),
+              type: PageTransitionType.theme,
+              settings: settings,
+              reverseDuration: const Duration(seconds: 3),
+            );
+
+          default:
+            return null;
+        }
       },
+
+      // routes: {
+      //   '/': (context) => const Auth(),
+      //   'homescreen': (context) => const HomeScreen(),
+      //   'registerscreen': (context) => const RegisterScreen(),
+      //   'loginscreen': (context) => const LoginScreen(),
+      // },
     );
   }
 }
