@@ -36,8 +36,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       drawer: const NavBar(),
       appBar: AppBar(
-          backgroundColor: ThemeColors.mainColor,
-          foregroundColor: Colors.white),
+        backgroundColor: ThemeColors.mainColor,
+        foregroundColor: Colors.white,
+        title: const Row(
+          children: [
+            Text(
+              'Home',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/config/theme_colors.dart';
 import 'package:koala/src/screens/home_screen.dart';
+import 'package:koala/src/screens/tasks_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 class NavBar extends StatefulWidget {
@@ -59,8 +60,17 @@ class _MyWidgetState extends State<NavBar> {
           ),
           ListTile(
             leading: Icon(Icons.task),
-            title: Text('To do'),
-            onTap: () => null,
+            title: Text('Today DO'),
+            onTap: () => {
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeftWithFade,
+                  duration: const Duration(milliseconds: 300),
+                  child: const TodayDo(),
+                ),
+              )
+            },
           ),
           ListTile(
             leading: Icon(Icons.notifications),
