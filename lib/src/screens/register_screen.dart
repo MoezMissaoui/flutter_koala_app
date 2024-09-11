@@ -282,7 +282,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: ThemeColors.mainColor,
+                            backgroundColor: ThemeColors.secondColor,
                             minimumSize: const Size.fromHeight(45),
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             shape: RoundedRectangleBorder(

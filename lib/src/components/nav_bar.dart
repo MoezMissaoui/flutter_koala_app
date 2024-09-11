@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/config/theme_colors.dart';
 import 'package:koala/src/screens/home_screen.dart';
-import 'package:koala/src/screens/tasks_screen.dart';
+import 'package:koala/src/screens/task_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 class NavBar extends StatefulWidget {
@@ -48,28 +48,32 @@ class _MyWidgetState extends State<NavBar> {
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () => {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.rightToLeftWithFade,
-                  duration: const Duration(milliseconds: 300),
-                  child: const HomeScreen(),
-                ),
-              )
+              Navigator.of(context).pushReplacementNamed('homescreen')
+
+              // Navigator.push(
+              //   context,
+              //   PageTransition(
+              //     type: PageTransitionType.rightToLeftWithFade,
+              //     duration: const Duration(milliseconds: 300),
+              //     child: const HomeScreen(),
+              //   ),
+              // )
             },
           ),
           ListTile(
             leading: Icon(Icons.task),
             title: Text('Today DO'),
             onTap: () => {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.rightToLeftWithFade,
-                  duration: const Duration(milliseconds: 300),
-                  child: const TodayDo(),
-                ),
-              )
+              Navigator.of(context).pushReplacementNamed('taskscreen')
+
+              // Navigator.push(
+              //   context,
+              //   PageTransition(
+              //     type: PageTransitionType.rightToLeftWithFade,
+              //     duration: const Duration(milliseconds: 300),
+              //     child: const TodayDo(),
+              //   ),
+              // )
             },
           ),
           ListTile(
@@ -78,7 +82,7 @@ class _MyWidgetState extends State<NavBar> {
             onTap: () => null,
             trailing: ClipOval(
               child: Container(
-                color: ThemeColors.mainColor,
+                color: ThemeColors.secondColor,
                 width: 20,
                 height: 20,
                 child: Center(

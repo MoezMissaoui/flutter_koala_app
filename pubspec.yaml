@@ -41,6 +41,7 @@ dependencies:
   page_transition: ^2.1.0
   cloud_firestore: ^5.4.0
   flutter_launcher_icons: 0.13.1 
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -58,10 +59,14 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/koala.png"
+  image_path_ios: "assets/images/koala.png"
+  adaptive_icon_background: "#EEEEEE"
+  background_color_ios: "#EEEEEE"
+
 
 # The following section is specific to Flutter packages.
 flutter:

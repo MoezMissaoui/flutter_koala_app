@@ -3,25 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:koala/src/components/nav_bar.dart';
 import 'package:koala/src/config/theme_colors.dart';
-import 'package:koala/src/models/task.dart';
+import 'package:koala/src/models/task_data.dart';
 import 'package:koala/src/screens/tasks/add_task_screen.dart';
-import 'package:koala/src/widgets/tasks_list.dart';
+import 'package:koala/src/widgets/task_list.dart';
 
-class TodayDo extends StatefulWidget {
-  const TodayDo({super.key});
+import 'package:provider/provider.dart';
 
-  @override
-  State<TodayDo> createState() => _TodayDoState();
-}
-
-class _TodayDoState extends State<TodayDo> {
-  List<Task> tasks = [
-    Task(name: 'go shopping'),
-    Task(name: 'buy a gift'),
-    Task(name: 'travel to Brazil'),
-    Task(name: 'repair the car'),
-  ];
-
+class TaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,10 +43,10 @@ class _TodayDoState extends State<TodayDo> {
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: AddTaskScreen((newTaskTitle) {
-                  setState(() {
-                    tasks.add(Task(name: newTaskTitle));
-                    Navigator.pop(context);
-                  });
+                  // setState(() {
+                  //   tasks.add(Task(name: newTaskTitle));
+                  //   Navigator.pop(context);
+                  // });
                 }),
               ),
             ),
@@ -91,7 +79,7 @@ class _TodayDoState extends State<TodayDo> {
                 bottom: 5,
               ),
               child: Text(
-                '${tasks.length} Tasks',
+                '${Provider.of<TaskData>(context).tasks.length} Tasks',
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
@@ -102,9 +90,7 @@ class _TodayDoState extends State<TodayDo> {
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                 ),
-                child: TasksList(
-                  tasks: tasks,
-                ),
+                child: TaskList(),
               ),
             )
           ],

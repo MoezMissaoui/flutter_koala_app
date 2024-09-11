@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/models/task_data.dart';
+
+import 'package:provider/provider.dart';
 
 class AddTaskScreen extends StatelessWidget {
   final Function addTaskCallback;
@@ -22,7 +25,7 @@ class AddTaskScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 30,
-                color: ThemeColors.mainColor,
+                color: ThemeColors.secondColor,
                 fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -39,11 +42,15 @@ class AddTaskScreen extends StatelessWidget {
             height: 30,
           ),
           TextButton(
-            onPressed: () => {addTaskCallback(newTaskTitle)},
+            onPressed: () {
+              Provider.of<TaskData>(context, listen: false)
+                  .addTask(newTaskTitle!);
+              Navigator.pop(context);
+            },
             child: Text('Add'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.white,
-              backgroundColor: ThemeColors.mainColor,
+              backgroundColor: ThemeColors.secondColor,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(10),
