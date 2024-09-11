@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,9 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/helpers/Alert.dart';
 import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/helpers/auth_firebase.dart';
 import 'package:koala/src/helpers/validator_rules.dart';
+import 'package:koala/src/models/auth_data.dart';
 import 'package:koala/src/screens/login_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -25,30 +28,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  // String get displayName => null;
+
   Future register() async {
     try {
-      User? user;
-      FirebaseAuth auth = FirebaseAuth.instance;
+      // User? user;
+      // FirebaseAuth auth = FirebaseAuth.instance;
 
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      // UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      //   email: _emailController.text.trim(),
+      //   password: _passwordController.text.trim(),
+      // );
 
-      user = userCredential.user;
-      await user!
-          .updateProfile(displayName: _displayNameController.text.trim());
-      await user.reload();
-      user = auth.currentUser;
-
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushNamed('/');
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        Alert.of(context).showError("The password provided is too weak");
-      } else if (e.code == 'email-already-in-use') {
-        Alert.of(context)
-            .showError("The account already exists for that email");
+      // user = userCredential.user;
+      // await user!
+      //     .updateProfile(displayName: _displayNameController.text.trim());
+      // await user.reload();
+      // user = auth.currentUser;
+      String registerResponse = await AuthFirebase.register(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+          _displayNameController.text.trim());
+      if (registerResponse == 'true') {
+        Provider.of<AuthData>(context, listen: false)
+            .changeAuthentication(true);
+        Navigator.of(context).pushNamed('/');
+      } else {
+        Alert.of(context).showError(registerResponse);
       }
     } catch (e) {
       Alert.of(context).showError("System Error");
@@ -96,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       // Image
                       Image.asset(
                         Constants.logo,
-                        height: 100,
+                        height: 120,
                       ),
 
                       SizedBox(
@@ -112,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       // subtitle
 
-                      Text("Welcome! Here you can register :-)",
+                      Text("Welcome! Here you can register 😊",
                           style: GoogleFonts.robotoCondensed(
                             fontSize: 18,
                           )),

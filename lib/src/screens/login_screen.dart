@@ -1,12 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/helpers/auth_firebase.dart';
 import 'package:koala/src/helpers/validator_rules.dart';
 import 'package:koala/src/helpers/alert.dart';
+import 'package:koala/src/models/auth_data.dart';
 import 'package:koala/src/screens/register_screen.dart';
+import 'package:koala/src/services/biometric_auth_service.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,17 +25,99 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final storage = const FlutterSecureStorage();
+
+  late final String _storeduserEmail;
+  late final String _storedUserPassword;
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   Future login() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+      // UserCredential successFirevaseSignIn =
+      //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+      //   email: _emailController.text.trim(),
+      //   password: _passwordController.text.trim(),
+      // );
+
+      String loginResponse = await AuthFirebase.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
+
+      if (loginResponse == 'true') {
+        // Store a key-value pair
+        await storage.write(
+            key: 'userEmail', value: _emailController.text.trim());
+        await storage.write(
+            key: 'userPassword', value: _passwordController.text.trim());
+
+        Provider.of<AuthData>(context, listen: false)
+            .changeAuthentication(true);
+
+        Navigator.of(context).pushReplacementNamed('/');
+      } else {
+        Alert.of(context).showError(loginResponse);
+      }
     } catch (e) {
-      Alert.of(context).showError("These credentials do not match our records");
+      debugPrint('Error simple login $e');
+      Alert.of(context).showError("System Error");
+    }
+  }
+
+  Future biometricLogin() async {
+    try {
+      if (_storeduserEmail == '' || _storedUserPassword == '') {
+        Alert.of(context).showError(
+            "Can't use biometric autentication without stored creds");
+        return false;
+      }
+
+      // UserCredential successFirevaseSignIn =
+      //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+      //   email: _storeduserEmail,
+      //   password: _storedUserPassword,
+      // );
+
+      if (await BiometricAuthService.authenticate()) {
+        String loginResponse = await AuthFirebase.login(
+          _storeduserEmail,
+          _storedUserPassword,
+        );
+
+        if (loginResponse == 'true') {
+          Provider.of<AuthData>(context, listen: false)
+              .changeAuthentication(true);
+          Navigator.of(context).pushReplacementNamed('/');
+        } else {
+          Alert.of(context).showError(loginResponse);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error biometric login $e');
+      Alert.of(context).showError("System Error");
+    }
+  }
+
+  Future<void> _loadCredentials() async {
+    try {
+      String? storedUsername = await storage.read(key: 'userEmail');
+      String? storedPassword = await storage.read(key: 'userPassword');
+
+      if (storedUsername != null) {
+        setState(() {
+          _storeduserEmail = storedUsername;
+        });
+      }
+
+      if (storedPassword != null) {
+        setState(() {
+          _storedUserPassword = storedPassword;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading credentials: $e');
     }
   }
 
@@ -52,6 +141,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadCredentials();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -70,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Image
                       Image.asset(
                         Constants.logo,
-                        height: 100,
+                        height: 120,
                       ),
 
                       const SizedBox(
@@ -86,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // subtitle
 
-                      Text("Welcome back! Nice to see you again :-)",
+                      Text("Welcome back! Nice to see you again 😊",
                           style: GoogleFonts.robotoCondensed(
                             fontSize: 18,
                           )),
@@ -193,6 +288,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                           child: const Text('Login'),
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 15,
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: GestureDetector(
+                          onTap: () {
+                            biometricLogin();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                  width: 2, color: ThemeColors.secondColor),
+                            ),
+                            child: Icon(
+                              Icons.fingerprint,
+                              size: 50,
+                              color: ThemeColors.secondColor,
+                            ),
+                          ),
                         ),
                       ),
 

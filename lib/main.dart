@@ -1,4 +1,5 @@
 import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/models/auth_data.dart';
 import 'package:koala/src/models/task_data.dart';
 import 'package:koala/src/screens/home_screen.dart';
 import 'package:koala/src/screens/register_screen.dart';
@@ -25,8 +26,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TaskData(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TaskData()),
+        ChangeNotifierProvider(create: (context) => AuthData()),
+      ],
       child: MaterialApp(
         title: 'Koala',
         debugShowCheckedModeBanner: false,

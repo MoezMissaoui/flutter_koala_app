@@ -4,9 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/helpers/auth_firebase.dart';
+import 'package:koala/src/models/auth_data.dart';
 import 'package:koala/src/screens/home_screen.dart';
 import 'package:koala/src/screens/task_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -111,7 +114,13 @@ class _MyWidgetState extends State<NavBar> {
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Exit'),
-            onTap: () => {FirebaseAuth.instance.signOut()},
+            onTap: () {
+              if (AuthFirebase.logout()) {
+                Provider.of<AuthData>(context, listen: false)
+                    .changeAuthentication(false);
+                Navigator.of(context).pushReplacementNamed('/');
+              }
+            },
           ),
         ],
       ),
