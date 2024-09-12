@@ -1,45 +1,105 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:koala/helpers/Alert.dart';
-import 'package:koala/helpers/validator_rules.dart';
+import 'package:koala/src/config/constants.dart';
+import 'package:koala/src/config/theme_colors.dart';
+import 'package:koala/src/helpers/auth_firebase.dart';
+import 'package:koala/src/helpers/validator_rules.dart';
+import 'package:koala/src/helpers/alert.dart';
+import 'package:koala/src/models/auth_data.dart';
+import 'package:koala/src/screens/register_screen.dart';
+import 'package:koala/src/services/biometric_auth_service.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  final storage = const FlutterSecureStorage();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
-  Future register() async {
+  Future login() async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+      String loginResponse = await AuthFirebase.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushNamed('/');
-    } catch (e) {
-      if (e.toString().contains('email-already-in-use')) {
-        Alert.of(context).showError("This email already exist");
-        return;
+
+      if (loginResponse == 'true') {
+        // Store a key-value pair
+        await storage.write(
+            key: 'userEmail', value: _emailController.text.trim());
+        await storage.write(
+            key: 'userPassword', value: _passwordController.text.trim());
+
+        Provider.of<AuthData>(context, listen: false)
+            .changeAuthentication(true);
+
+        await storage.write(key: 'isAutheticated', value: 'true');
+
+        Navigator.of(context).pushReplacementNamed('/');
+      } else {
+        Alert.of(context).showError(loginResponse);
       }
+    } catch (e) {
+      debugPrint('Error simple login $e');
       Alert.of(context).showError("System Error");
-      return;
     }
   }
 
-  void openLoginScreen() {
-    Navigator.of(context).pushReplacementNamed('loginscreen');
+  Future biometricLogin() async {
+    try {
+      String? storedUsername = await storage.read(key: 'userEmail');
+      String? storedPassword = await storage.read(key: 'userPassword');
+
+      if (storedUsername == null || storedPassword == null) {
+        Alert.of(context).showError(
+            "Can't use biometric autentication without stored creds");
+        return false;
+      }
+
+      if (await BiometricAuthService.authenticate()) {
+        String loginResponse = await AuthFirebase.login(
+          storedUsername,
+          storedPassword,
+        );
+
+        if (loginResponse == 'true') {
+          Provider.of<AuthData>(context, listen: false)
+              .changeAuthentication(true);
+          await storage.write(key: 'isAutheticated', value: 'true');
+          Navigator.of(context).pushReplacementNamed('/');
+        } else {
+          Alert.of(context).showError(loginResponse);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error biometric login $e');
+      Alert.of(context).showError("System Error ccc");
+    }
+  }
+
+  void openRegisterScreen() {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.rightToLeftWithFade,
+        duration: const Duration(milliseconds: 400),
+        child: const RegisterScreen(),
+      ),
+    );
+    // Navigator.of(context).pushReplacementNamed('registerscreen');
   }
 
   @override
@@ -47,7 +107,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -60,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: ConstrainedBox(
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -68,16 +132,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       // Image
                       Image.asset(
-                        'images/koala.png',
-                        height: 100,
+                        Constants.logo,
+                        height: 120,
                       ),
 
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
 
                       // Title
-                      Text("REGISTER",
+                      Text("LOGIN",
                           style: GoogleFonts.robotoCondensed(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
@@ -85,12 +149,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       // subtitle
 
-                      Text("Welcome! Here you can register :-)",
+                      Text("Welcome back! Nice to see you again 😊",
                           style: GoogleFonts.robotoCondensed(
                             fontSize: 18,
                           )),
 
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
 
@@ -128,12 +192,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
 
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
 
                       // Pasword TextField
-
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: Container(
@@ -168,61 +231,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
 
-                      SizedBox(
-                        height: 10,
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: TextFormField(
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              controller: _confirmPasswordController,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Confirm Password',
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Required Field';
-                                }
-
-                                if (!validatePasswordLength(value, 6)) {
-                                  return 'Password length shoud be at least 6';
-                                }
-
-                                if (!validateConfirmPassword(
-                                    value, _passwordController.text.trim())) {
-                                  return 'Error Password Confirmation';
-                                }
-
-                                return null;
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
 
-                      // Sign In Button
-
+                      // Login Button
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: Colors.amber[900],
+                            backgroundColor: ThemeColors.secondColor,
                             minimumSize: const Size.fromHeight(45),
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             shape: RoundedRectangleBorder(
@@ -233,34 +252,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () {
                             // Validate returns true if the form is valid, or false otherwise.
                             if (_formKey.currentState!.validate()) {
-                              register();
+                              login();
                             }
                           },
-                          child: const Text('Register'),
+                          child: const Text('Login'),
                         ),
                       ),
 
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
 
-                      // Text: sign up
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: GestureDetector(
+                          onTap: () {
+                            biometricLogin();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                  width: 2, color: ThemeColors.secondColor),
+                            ),
+                            child: Icon(
+                              Icons.fingerprint,
+                              size: 50,
+                              color: ThemeColors.secondColor,
+                            ),
+                          ),
+                        ),
+                      ),
 
+                      const SizedBox(
+                        height: 15,
+                      ),
+
+                      // Text: Register
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already a member ? ',
+                            'Not yes a member ? ',
                             style: GoogleFonts.robotoCondensed(
                               fontSize: 14,
                             ),
                           ),
                           GestureDetector(
-                            onTap: openLoginScreen,
+                            onTap: openRegisterScreen,
                             child: Text(
-                              'Login here',
+                              'Register Now',
                               style: GoogleFonts.robotoCondensed(
-                                color: Colors.green,
+                                color: ThemeColors.secondColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
@@ -269,7 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
 
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                     ],
