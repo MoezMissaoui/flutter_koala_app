@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +55,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Provider.of<AuthData>(context, listen: false)
             .changeAuthentication(true);
 
+        await storage.write(key: 'isAutheticated', value: 'true');
+
         Navigator.of(context).pushReplacementNamed('/');
       } else {
         Alert.of(context).showError(loginResponse);
@@ -89,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (loginResponse == 'true') {
           Provider.of<AuthData>(context, listen: false)
               .changeAuthentication(true);
+          await storage.write(key: 'isAutheticated', value: 'true');
           Navigator.of(context).pushReplacementNamed('/');
         } else {
           Alert.of(context).showError(loginResponse);

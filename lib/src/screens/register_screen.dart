@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:koala/src/config/constants.dart';
@@ -21,6 +21,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final storage = const FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
 
   final _displayNameController = TextEditingController();
@@ -52,6 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (registerResponse == 'true') {
         Provider.of<AuthData>(context, listen: false)
             .changeAuthentication(true);
+        await storage.write(key: 'isAutheticated', value: 'true');
         Navigator.of(context).pushNamed('/');
       } else {
         Alert.of(context).showError(registerResponse);

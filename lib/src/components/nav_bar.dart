@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:koala/src/config/constants.dart';
 import 'package:koala/src/config/theme_colors.dart';
 import 'package:koala/src/helpers/auth_firebase.dart';
@@ -19,6 +20,8 @@ class NavBar extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<NavBar> {
+  final storage = const FlutterSecureStorage();
+
   final currentUser = FirebaseAuth.instance.currentUser!;
 
   @override
@@ -114,10 +117,11 @@ class _MyWidgetState extends State<NavBar> {
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Exit'),
-            onTap: () {
+            onTap: () async {
               if (AuthFirebase.logout()) {
                 Provider.of<AuthData>(context, listen: false)
                     .changeAuthentication(false);
+                await storage.write(key: 'isAutheticated', value: 'false');
                 Navigator.of(context).pushReplacementNamed('/');
               }
             },

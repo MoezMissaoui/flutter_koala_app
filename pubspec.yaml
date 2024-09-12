@@ -46,6 +46,10 @@ dependencies:
   local_auth_android: ^1.0.44
   local_auth_darwin: ^1.4.0
   flutter_secure_storage: ^9.2.2
+  permission_handler: ^11.3.1
+  pdf: ^3.11.1
+  path_provider: ^2.1.4
+  printing: ^5.13.2
   
 
 dev_dependencies:
