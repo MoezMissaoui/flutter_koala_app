@@ -26,20 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final storage = const FlutterSecureStorage();
 
-  late final String _storedUserEmail;
-  late final String _storedUserPassword;
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   Future login() async {
     try {
-      // UserCredential successFirevaseSignIn =
-      //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-      //   email: _emailController.text.trim(),
-      //   password: _passwordController.text.trim(),
-      // );
-
       String loginResponse = await AuthFirebase.login(
         _emailController.text.trim(),
         _passwordController.text.trim(),
@@ -69,22 +60,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future biometricLogin() async {
     try {
-      if (_storedUserEmail == '' || _storedUserPassword == '') {
+      String? storedUsername = await storage.read(key: 'userEmail');
+      String? storedPassword = await storage.read(key: 'userPassword');
+
+      if (storedUsername == null || storedPassword == null) {
         Alert.of(context).showError(
             "Can't use biometric autentication without stored creds");
         return false;
       }
 
-      // UserCredential successFirevaseSignIn =
-      //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-      //   email: _storedUserEmail,
-      //   password: _storedUserPassword,
-      // );
-
       if (await BiometricAuthService.authenticate()) {
         String loginResponse = await AuthFirebase.login(
-          _storedUserEmail,
-          _storedUserPassword,
+          storedUsername,
+          storedPassword,
         );
 
         if (loginResponse == 'true') {
@@ -98,28 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       debugPrint('Error biometric login $e');
-      Alert.of(context).showError("System Error");
-    }
-  }
-
-  Future<void> _loadCredentials() async {
-    try {
-      String? storedUsername = await storage.read(key: 'userEmail');
-      String? storedPassword = await storage.read(key: 'userPassword');
-
-      if (storedUsername != null) {
-        setState(() {
-          _storedUserEmail = storedUsername;
-        });
-      }
-
-      if (storedPassword != null) {
-        setState(() {
-          _storedUserPassword = storedPassword;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading credentials: $e');
+      Alert.of(context).showError("System Error ccc");
     }
   }
 
@@ -145,7 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCredentials();
   }
 
   @override

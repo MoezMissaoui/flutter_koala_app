@@ -14,10 +14,10 @@ class AuthFirebase {
 
   static String currentUserName() {
     debugPrint('AuthFirebase currentUserName()');
-    String currentUserName = (currentUser().displayName != '')
+    String? currentUserName = (currentUser().displayName != '')
         ? currentUser().displayName
         : currentUser().email;
-    return currentUserName;
+    return currentUserName ?? '';
   }
 
   static bool logout() {
@@ -40,8 +40,8 @@ class AuthFirebase {
         password: password,
       );
 
-      debugPrint('xxxxxxxxx : $email');
-      debugPrint('yyyyyyyyyyyyy : $password');
+      debugPrint('EmailUser : $email');
+      debugPrint('PasswordUser : $password');
 
       return 'true';
     } on FirebaseAuthException catch (e) {
@@ -58,9 +58,9 @@ class AuthFirebase {
     debugPrint('AuthFirebase register()');
 
     try {
-      debugPrint('xxxxxxxxx : $email');
-      debugPrint('yyyyyyyyyyyyy : $password');
-      debugPrint('wwwwwwwwwwww : $displayName');
+      debugPrint('EmailUser : $email');
+      debugPrint('PasswordUser : $password');
+      debugPrint('DisplayNameUser : $displayName');
 
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
