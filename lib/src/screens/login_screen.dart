@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final storage = const FlutterSecureStorage();
 
-  late final String _storeduserEmail;
+  late final String _storedUserEmail;
   late final String _storedUserPassword;
 
   final _emailController = TextEditingController();
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future biometricLogin() async {
     try {
-      if (_storeduserEmail == '' || _storedUserPassword == '') {
+      if (_storedUserEmail == '' || _storedUserPassword == '') {
         Alert.of(context).showError(
             "Can't use biometric autentication without stored creds");
         return false;
@@ -77,13 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // UserCredential successFirevaseSignIn =
       //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-      //   email: _storeduserEmail,
+      //   email: _storedUserEmail,
       //   password: _storedUserPassword,
       // );
 
       if (await BiometricAuthService.authenticate()) {
         String loginResponse = await AuthFirebase.login(
-          _storeduserEmail,
+          _storedUserEmail,
           _storedUserPassword,
         );
 
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (storedUsername != null) {
         setState(() {
-          _storeduserEmail = storedUsername;
+          _storedUserEmail = storedUsername;
         });
       }
 

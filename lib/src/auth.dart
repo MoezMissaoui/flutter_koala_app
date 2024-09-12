@@ -25,10 +25,7 @@ class _AuthState extends State<Auth> {
 
   Future<void> _loadingIsAutheticated() async {
     try {
-      debugPrint(
-          'lllllllllllllllllll ${await storage.read(key: 'loadingIsAutheticated')}');
       String? isAutheticated = await storage.read(key: 'isAutheticated');
-
       if (isAutheticated != null) {
         setState(() {
           _isAutheticated = isAutheticated;
@@ -54,7 +51,6 @@ class _AuthState extends State<Auth> {
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: ((context, snapshot) {
-          debugPrint('eeeeeeeeeeeeeeee $_isAutheticated');
           debugPrint(
               'Auth status ${(_isAutheticated == 'true') ? 'Connected' : 'Not Connected'}');
           // if (snapshot.hasData || __isAutheticated) {

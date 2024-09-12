@@ -12,6 +12,14 @@ class AuthFirebase {
     return auth.currentUser;
   }
 
+  static String currentUserName() {
+    debugPrint('AuthFirebase currentUserName()');
+    String currentUserName = (currentUser().displayName != '')
+        ? currentUser().displayName
+        : currentUser().email;
+    return currentUserName;
+  }
+
   static bool logout() {
     debugPrint('AuthFirebase logout()');
     try {

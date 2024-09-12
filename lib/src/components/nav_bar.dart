@@ -22,7 +22,7 @@ class NavBar extends StatefulWidget {
 class _MyWidgetState extends State<NavBar> {
   final storage = const FlutterSecureStorage();
 
-  final currentUser = FirebaseAuth.instance.currentUser!;
+  final currentUser = AuthFirebase.currentUser();
 
   @override
   Widget build(BuildContext context) {
